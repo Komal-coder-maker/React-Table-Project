@@ -34,6 +34,9 @@ const Basic = () => {
 
   const [editId, setEditId] = useState(null);
 
+  // SEARCH STATE
+  const [search, setSearch] = useState("");
+
   const getStudents = async () => {
 
     const querySnapshot = await getDocs(collection(db, "students"));
@@ -114,7 +117,6 @@ const Basic = () => {
     setEditId(student.id);
   };
 
-  
   const downloadExcel = () => {
 
     const data = students.map((s) => ({
@@ -143,7 +145,6 @@ const Basic = () => {
     saveAs(file, "students.xlsx");
   };
 
-  
   const downloadPDF = () => {
 
     const doc = new jsPDF();
@@ -166,6 +167,11 @@ const Basic = () => {
 
     doc.save("students.pdf");
   };
+
+  // FILTER STUDENTS FOR SEARCH
+  const filteredStudents = students.filter((s) =>
+    s.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   const columns = [
 
@@ -204,7 +210,7 @@ const Basic = () => {
   ];
 
   const table = useReactTable({
-    data: students,
+    data: filteredStudents,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
@@ -217,6 +223,18 @@ const Basic = () => {
       <h2 className="text-3xl font-bold text-center mb-8">
         Student Management
       </h2>
+
+      {/* SEARCH BAR */}
+
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Search by name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border p-2 w-80"
+        />
+      </div>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
 
@@ -263,8 +281,6 @@ const Basic = () => {
         />
 
       </div>
-
-    
 
       <div className="flex gap-4 mb-8">
 
